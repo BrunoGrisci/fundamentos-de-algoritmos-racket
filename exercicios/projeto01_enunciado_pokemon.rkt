@@ -1,0 +1,221 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-advanced-reader.ss" "lang")((modname projeto01_enunciado_pokemon) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Prof. Bruno Iochins Grisci
+;; INF05008 - Fundamentos De Algoritmos
+;; PROJETO 1
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;; INSTRUÇÕES:
+;;
+;; Este projeto deve ser resolvido individualmente, mas é permitido conversar ;; com os colegas.
+;; USE OS NOMES DE FUNÇÕES DEFINIDOS NAS QUESTÕES.
+;; Use o template da solução disponível no Moodle.
+;; DEVE ser colocada a documentação completa, ou seja, contrato, objetivo, e ;; pelo menos 2 exemplos e 2 testes (só não precisa incluir testes nas funções ;; que geram imagens).
+;; Nas funções que geram imagens, deixe apenas as chamadas para que quando seu ;; arquivo for executado, as imagens sejam geradas. Nos exemplos, ou cole a 
+;; imagem gerada ou explique que imagem deve ser gerada em cada exemplo.
+;; Em TODOS os CONDICIONAIS que você usar, explique cada caso (usando 
+;; comentarios), por exemplo:
+;; (cond
+;; ;; se o número n for igual a zero, devolver o sucessor deste número
+;; [(= 0 n) (+ n 1)]
+;; ;; senão, devolver o próprio número n
+;; [else n])
+;;
+;; ENUNCIADO:
+;;
+;; Pokémon™ é um jogo muito popular no qual criaturas batalham. Um dos muitos 
+;; atributos que um Pokémon™ pode ter é um tipo. Atualmente existem 18 tipos 
+;; diferentes, como normal, fire, water, electric, grass, etc. Por
+;; simplicidade, vamos considerar neste projeto que cada Pokémon™ pode ter um 
+;; único tipo. Estes tipos conferem certas vantagens ou desvantagens num
+;; duelo. Por exemplo, um ataque to tipo fire terá efetividade normal 
+;; (effective) contra um Pokémon™ do tipo electric, efetividade aumentada 
+;; (super-effective) contra um Pokémon™ do tipo ice e efetividade reduzida
+;; (not very effective) contra um Pokémon™ do tipo water. Algumas combinações
+;; também podem não ter efeito algum, como por exemplo um ataque do tipo
+;; ground contra um Pokémon™ do tipo flying.
+;;
+;; Como você pode ver, essas combinações podem ficar complicadas rapidamente
+;; dado o grande número de tipos. Você pode ver a tabela completa de
+;; efetividade neste link: https://pokemondb.net/type
+;;
+;; Vamos simplificar isso usando nossos conhecimentos de programação!
+;; Abaixo, você deve criar funções e constantes que juntas, resultarão num 
+;; programa final que receberá de entrada duas strings representando o tipo
+;; do ataque e o tipo da defesa de um duelo Pokémon™ e como resultado irá
+;; desenhar na tela para o usuário duas cartas resumindo este estado do duelo
+;; e qual será a efetividade do ataque.
+;;
+
+(require 2htdp/image)
+
+;##########################################################################
+;### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 ### 1 
+;##########################################################################
+
+;Definição das constantes (modificar por sua conta e risco)
+
+;Dimensões:
+(define CARTA_ALT 175)
+(define CARTA_LAR 125)
+
+;Desenhos
+(define MESA (circle (+ CARTA_ALT 20) "solid" "lightgray"))
+
+;Cartas
+(define FUNDO_NORMAL (rectangle CARTA_LAR CARTA_ALT "solid" "darkgray"))
+(define FUNDO_FIRE (rectangle CARTA_LAR CARTA_ALT "solid" "red"))
+(define FUNDO_WATER (rectangle CARTA_LAR CARTA_ALT "solid" "blue"))
+(define FUNDO_ELECTRIC (rectangle CARTA_LAR CARTA_ALT "solid" "yellow"))
+(define FUNDO_GRASS (rectangle CARTA_LAR CARTA_ALT "solid" "green"))
+(define FUNDO_ICE (rectangle CARTA_LAR CARTA_ALT "solid" "lightblue"))
+(define FUNDO_FIGHTING (rectangle CARTA_LAR CARTA_ALT "solid" "brown"))
+(define FUNDO_POISON (rectangle CARTA_LAR CARTA_ALT "solid" "mediumorchid"))
+;; ...
+;; ATENÇÃO: Leia as informações em https://pokemondb.net/type e complete as constantes ;; de Cartas para os tipos de Pokémon que faltam acima.
+
+;Borda
+; ATENÇÃO: Descomente a linha abaixo e substitua X por um valor numérico que gere um bom resultado.
+; (define BORDA (rectangle (+ CARTA_LAR X) (+ CARTA_ALT X) "outline" "black"))
+
+;Strings
+(define ATAQUE "Attack")
+(define DEFESA "Defense")
+
+;Strings de efeitos
+(define EFEITO_SEMEFEITO "No effect")
+(define EFEITO_NAOEFETIVO "Not very effective")
+(define EFEITO_EFETIVO "Effective")
+(define EFEITO_SUPEREFETIVO "Super-effective!")
+
+;Strings dos tipos
+(define TYPE_NORMAL "NORMAL")
+(define TYPE_FIRE "FIRE")
+(define TYPE_WATER "WATER")
+(define TYPE_ELECTRIC "ELECTRIC")
+(define TYPE_GRASS "GRASS")
+(define TYPE_ICE "ICE")
+(define TYPE_FIGHTING "FIGHTING")
+(define TYPE_POISON "POISON")
+;; ...
+;;
+;; ATENÇÃO: Leia as informações em https://pokemondb.net/type e complete as 
+;; constantes de Strings para os tipos de Pokémon que faltam acima.
+;;
+;; ATENÇÃO: Para todas as funções abaixo, complete-as adicionando o corpo da ;; função, exemplos e testes usando check-expect quando possível.
+;;
+;##########################################################################
+;### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 ### 2 
+;##########################################################################
+
+;cria_carta: Imagem Imagem String -> Imagem
+;Objetivo: Dado a borda da carta, o fundo escolhido referente ao tipo da carta e a String com o tipo da carta, devolve uma imagem com a carta montada (colocar o texto em cima do fundo em cima da borda).
+
+;; Dica: leia a documentação das funções overlay 
+;; https://docs.racket-lang.org/teachpack/image.html#%28def._%28%28lib._htdp%2Fimage..rkt%29._overlay%29%29
+;; e text
+;; https://docs.racket-lang.org/teachpack/image.html#%28def._%28%28lib._htdp%2Fimage..rkt%29._text%29%29
+
+;(define (cria_carta borda fundo tipo)
+;  ...
+;; Testes:
+
+;##########################################################################
+;### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 
+;##########################################################################
+
+;selectiona_fundo: String -> Imagem
+;Objetivo: Dado uma string, que pode ser qualquer um dos tipos,
+;devolve o fundo que deve ser colocado na carta referente ao tipo escolhido. A função deve funcionar independentemente da capitalização do tipo, por exemplo "fire", "FIRE" e "Fire" devem retornar o mesmo resultado. Se o tipo não existir retorne uma string com uma mensagem de erro "Tipo não existente!".
+
+;; Dica: leia a documentação sobre String Comparisons: https://docs.racket-lang.org/reference/strings.html
+
+;(define (seleciona_fundo tipo)
+;  ...
+
+;; Testes:
+
+;##########################################################################
+;### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 ### 3 
+;##########################################################################
+
+;; PARE E PENSE: Você está usando as constanges definidas no primeiro exercício? Qual a importância ou vantagem de usá-las ao criar novas funções?
+
+;##########################################################################
+;### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 
+;##########################################################################
+
+;verifica_efeito: String String -> String
+;Objetivo: Dado o tipo da carta de ataque e o tipo da carta de defesa,
+;devolve qual o efeito do ataque segundo a tabela de vantagens.
+; Tabela de vantagens: https://pokemondb.net/type
+;Exemplos:
+
+
+; Dica: são muitos tipos! Primeiro implemente a função para apenas alguns e termine os próximos exercícios, depois volte e complete esta função com os tipos que faltarem.
+
+;(define (verifica_efeito att def)
+; ...
+;; Testes:
+
+;##########################################################################
+;### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 ### 4 
+;##########################################################################
+
+;; PARE E PENSE: Como você implementou a função verifica_efeito? Há uma maneira mais curta (em termos de linhas de código) de implementá-la?
+
+;##########################################################################
+;### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 
+;##########################################################################
+
+;desenha_cenario: Imagem Imagem Imagem Imagem -> Imagem
+;Objetivo: Dados as imagens de duas cartas, os rótulos das cartas (se estão atacando ou defendendo), a mesa de fundo e o resultado do efeito do ataque, desenha uma imagem colocando as cartas lado a lado em cima da mesa (ataque na esquerda e defesa na direita), escrito "Attack" em cima da carta atacante e "Defense" em cima da carta defendendo, e o resultado do efeito embaixo da mesa.
+
+; Dica: leia a documentação das funções overlay, beside e above
+; https://docs.racket-lang.org/teachpack/image.html#%28def._%28%28lib._htdp%2Fimage..rkt%29._overlay%29%29
+; https://docs.racket-lang.org/teachpack/2htdpimage.html#%28def._%28%28lib._2htdp%2Fimage..rkt%29._beside%29%29
+; https://docs.racket-lang.org/teachpack/2htdpimage.html#%28def._%28%28lib._2htdp%2Fimage..rkt%29._above%29%29
+
+;(define (desenha_cenario carta_atk carta_def rot_atk rot_def mesa resultado)
+; ...
+;; Testes:
+
+;##########################################################################
+;### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 ### 5 
+;##########################################################################
+
+;; PARE E PENSE: Agora que você já implementou a função desenha_cenario, que outras maneiras de organizar a imagem você consegue imaginar?
+
+;##########################################################################
+;### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 
+;##########################################################################
+
+;desenha_efeito: String String -> Desenho
+;Objetivo: Dada a String do tipo da carta atacando e do tipo da carta defendendo, desenha o efeito completo com as duas cartas na mesa, qual a atacante, a defendendo, e o efeito do ataque. Se um dos tipos não existir, devolva a mensagem de erro "Tipo não existe!".
+
+;; Dica: leia a documentação da função text
+;; https://docs.racket-lang.org/teachpack/image.html#%28def._%28%28lib._htdp%2Fimage..rkt%29._text%29%29
+;; Dica: Você pode reaproveitar funções que já definiu!
+
+;(define (desenha_efeito atk def)
+; ...
+;; Testes:
+
+;##########################################################################
+;### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 ### 6 
+;##########################################################################
+
+;; PARE E PENSE: A sua função desenha_efeito funciona caso as strings de tipos sejam escritas com outras capitalizações? Por exemplo, ela funciona se a string for "fire", "Fire" ou "FIRE"? Por que funciona ou não funciona? Se não funciona, como você pode arrumar?
+
+;; Dica: leia a documentação da função string-upcase
+;; https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._string-upcase%29%29
+
+
+
+
+
+
+
+
