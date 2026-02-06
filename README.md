@@ -1,4 +1,4 @@
-# Fundamentos de Algoritmos - Racket
+# Fundamentos de Algoritmos - Racket/Scheme
 
 ![Fundamentos de Algoritmos — header](assets/banner.png)
 
@@ -18,7 +18,7 @@ A disciplina segue a metodologia e conteúdo do livro:
 
 ## 🛠️ Ferramentas e Ambiente
 
-Os códigos deste repositório são escritos em **Racket** (uma variante de Scheme). Para executar e editar os arquivos, recomenda-se o uso das seguintes ferramentas:
+Os códigos deste repositório são escritos em **Racket** (uma variante de **Scheme**). Para executar e editar os arquivos, recomenda-se o uso das seguintes ferramentas:
 
 *   **[DrRacket](https://racket-lang.org/)**: O ambiente de desenvolvimento (IDE) oficial e recomendado para a disciplina. Permite executar os programas passo-a-passo e visualizar estruturas de dados.
 *   **[WeScheme](https://www.wescheme.org/)**: Uma alternativa baseada em navegador para programação em Racket.
